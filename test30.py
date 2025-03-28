@@ -57,6 +57,10 @@ class MonApp(ctk.CTk) :
     def tracer(self) :
         fonction = self.entry1.get()
 
+        if self.entry1.get() == "" :
+            messagebox.showinfo("Erreur", "Entrer une fonction")
+            return
+
         if not "x" in fonction :
             messagebox.showinfo("Erreur", "La variable de la fonction est x")
             return
