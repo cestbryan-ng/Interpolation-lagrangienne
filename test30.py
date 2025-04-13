@@ -4,16 +4,19 @@ import customtkinter as ctk
 from tkinter import messagebox
 from math import *
 
+# Génerer les points de Chebyshev
+def cheb(born_inf : int, born_sup : int, n : int) :
+    x_i = list()
+    for k in range(1, n + 1) :
+        x_i.append((born_inf + born_sup) / 2 + ((born_sup - born_inf) / 2) * np.cos(((2 * k - 1) * np.pi) / (2 * n)))
+    return x_i
+
 # Calcul de la valeur en point du polynome de lagrang
-def p(a, n : int, fonction : str) :
-    liste_points, x_i = list(), np.linspace(-25, 25, n)
+# Calcul de la valeur en point du polynome de lagrange
+def p(a, n : int, fonction : str, liste_points : list) :
+    # Calcul de la valeur du polynome en un point x
     somme_poly = 0
 
-    # Generer une liste de n points
-    for x in x_i :
-        liste_points.append((x, eval(fonction)))
-
-    # Calcul de la valeur du polynome en un point x
     for i in range(n) :
         produit_lag = 1
         for j in range(n) :
@@ -77,22 +80,29 @@ class MonApp(ctk.CTk) :
             if nombre_points <= 0 :
                 messagebox.showinfo("Entrer un nombre superieur à 0")
                 return
+            
+            # Generer une liste de points
+            x_i = cheb(-25, 25, nombre_points)
+            liste_points = list()
+            for x in x_i :
+                liste_points.append((x, eval(fonction)))
 
             Y, Y_polynome = list(), list()
             for x in MonApp.X :
                 Y.append(eval(fonction))
-                Y_polynome.append(p(x, nombre_points, fonction))
+                Y_polynome.append(p(x, nombre_points, fonction, liste_points))
             Y = np.array(Y)
             Y_polynome = np.array(Y_polynome)
 
             plt.plot(MonApp.X, Y, label = fonction, linewidth = 2)
-            plt.plot(MonApp.X, Y_polynome, label = f"Polynome d'interpo en {nombre_points} points")
+            plt.plot(MonApp.X, Y_polynome, ls = "--" , color = "red", label = f"Polynome d'interpo en {nombre_points} points")
             plt.xlabel("Axe des x")
             plt.ylabel("Axe des y")
             plt.xlim(-25, 25)
             plt.ylim(-0.25, 1.25)
             plt.grid(True)
             plt.legend()
+            plt.title("Interpolation Lagrangienne utilisant les points de chebyshev")
             plt.show()
         except ValueError :
             messagebox.showinfo("Erreur", "Entrer un nombre")
